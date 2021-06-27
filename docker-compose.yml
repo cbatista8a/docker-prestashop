@@ -1,0 +1,55 @@
+version: "3"
+services:
+  prestashop:
+    image: prestashop/prestashop
+    networks:
+      prestashop_net:
+        aliases:
+          - prestashop_host
+    ports:
+      - 3000:80
+    links:
+      - mariadb:mariadb
+    depends_on:
+      - mariadb
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      - PS_DEV_MODE="${PS_DEV_MODE}"
+      - DB_SERVER="${DB_SERVER}"
+      - DB_USER="${DB_USER}"
+      - DB_PASSWD="${DB_PASSWD}"
+      - DB_NAME="${DB_NAME}"
+      - PS_INSTALL_AUTO="${PS_INSTALL_AUTO}"
+
+  mariadb:
+    image: mariadb
+    networks:
+      prestashop_net:
+        aliases:
+          - mariadb_host
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
+      - MYSQL_DATABASE="${MYSQL_DATABASE}"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    networks:
+      - prestashop_net
+    links:
+      - mariadb:mariadb
+    ports:
+      - 1234:80
+    depends_on:
+      - mariadb
+    environment:
+      - PMA_HOST="${PMA_HOST}"
+      - PMA_USER="${PMA_USER}"
+      - PMA_PASSWORD="${PMA_PASSWORD}"
+
+networks:
+  prestashop_net:
+    name: mynet
+    driver: bridge
