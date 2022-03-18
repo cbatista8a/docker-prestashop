@@ -2,6 +2,7 @@ version: "3"
 services:
   mariadb:
     image: mariadb
+    restart: always
     networks:
       - prestashop_net
     volumes:
@@ -11,7 +12,9 @@ services:
       - MYSQL_DATABASE
 
   prestashop:
-    image: prestashop/prestashop
+#    image: prestashop/prestashop
+    build: .
+    restart: always
     networks:
       - prestashop_net
     ports:
@@ -22,6 +25,7 @@ services:
       - mariadb
     volumes:
       - ./src:/var/www/html
+      - ./docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     environment:
       - PS_DEV_MODE
       - DB_SERVER
@@ -32,6 +36,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    restart: always
     networks:
       - prestashop_net
     links:
