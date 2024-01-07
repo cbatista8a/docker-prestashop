@@ -1,8 +1,9 @@
 version: "3"
 services:
   mariadb:
+    container_name: prestashop_db
     image: mariadb
-    restart: always
+    restart: unless-stopped
     networks:
       - prestashop_net
     volumes:
@@ -12,9 +13,9 @@ services:
       - MYSQL_DATABASE
 
   prestashop:
-#    image: prestashop/prestashop
+    container_name: prestashop_dev
     build: .
-    restart: always
+    restart: unless-stopped
     networks:
       - prestashop_net
     ports:
@@ -36,7 +37,8 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    restart: always
+    container_name: prestashop_db_manager
+    restart: unless-stopped
     networks:
       - prestashop_net
     links:
